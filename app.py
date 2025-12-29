@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import pickle
 import numpy as np
-from PIL import Image
 import os
 
 # --- PAGE CONFIG ---
@@ -31,7 +30,7 @@ st.write("Predict if a customer is at risk of leaving based on their profile.")
 
 if model is None:
     st.error("⚠️ Error: Model files not found.")
-    st.write("Please ensure 'churn_model.pkl', 'scaler.pkl', and 'model_features.pkl' are uploaded.")
+    st.info("Please upload 'churn_model.pkl', 'scaler.pkl', and 'model_features.pkl' to your GitHub repository.")
 else:
     # --- TABS ---
     tab1, tab2 = st.tabs(["⚡ Prediction Tool", "📊 Project Insights"])
@@ -100,16 +99,19 @@ else:
         st.header("Project Analysis")
         
         st.subheader("1. Feature Importance")
-        # Checks if file exists before trying to open
-        if os.path.exists("churn_drivers.png"):
+        # Robust image loading
+        try:
             st.image("churn_drivers.png", caption="Age & Balance are key drivers", use_container_width=True)
-        else:
-            st.info("ℹ️ 'churn_drivers.png' not found in repo.")
+        except:
+            st.info("ℹ️ Upload 'churn_drivers.png' to see the chart.")
 
         st.divider()
 
         st.subheader("2. Model Accuracy")
-        if os.path.exists("confusion_matrix_final.png"):
+        try:
+            st.image("confusion_matrix_final.png", caption="Confusion Matrix", use_container_width=True)
+        except:
+            st.info("ℹ️ Upload 'confusion_matrix_final.png' to see the matrix.")
             st.image("confusion_matrix_final.png", caption="Confusion Matrix", use_container_width=True)
         else:
             st.info("ℹ️ 'confusion_matrix_final.png' not found in repo.")
