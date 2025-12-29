@@ -10,17 +10,17 @@ st.set_page_config(page_title="Customer Retention AI", page_icon="🏦", layout=
 # --- LOAD ASSETS ---
 @st.cache_resource
 def load_assets():
-    try:
-        # Load the Real Model & Scaler from your GitHub files
-        with open('churn_model.pkl', 'rb') as f:
-            model = pickle.load(f)
-        with open('scaler.pkl', 'rb') as f:
-            scaler = pickle.load(f)
-        with open('model_features.pkl', 'rb') as f:
-            columns = pickle.load(f)
-        return model, scaler, columns
-    except Exception as e:
+    # We use a simple check to see if files exist to avoid crashing
+    if not os.path.exists('churn_model.pkl'):
         return None, None, None
+    
+    with open('churn_model.pkl', 'rb') as f:
+        model = pickle.load(f)
+    with open('scaler.pkl', 'rb') as f:
+        scaler = pickle.load(f)
+    with open('model_features.pkl', 'rb') as f:
+        columns = pickle.load(f)
+    return model, scaler, columns
 
 model, scaler, model_columns = load_assets()
 
@@ -29,8 +29,8 @@ st.title("🏦 Customer Churn Predictor")
 st.write("Predict if a customer is at risk of leaving based on their profile.")
 
 if model is None:
-    st.error("⚠️ Error: Model files not found.")
-    st.info("Please upload 'churn_model.pkl', 'scaler.pkl', and 'model_features.pkl' to your GitHub repository.")
+    st.error("⚠️ Model files not found.")
+    st.info("Please upload 'churn_model.pkl', 'scaler.pkl', and 'model_features.pkl' to GitHub.")
 else:
     # --- TABS ---
     tab1, tab2 = st.tabs(["⚡ Prediction Tool", "📊 Project Insights"])
@@ -99,29 +99,18 @@ else:
         st.header("Project Analysis")
         
         st.subheader("1. Feature Importance")
-        # Robust image loading
-        try:
+        # CHECK IF FILE EXISTS (Safe Method)
+        if os.path.exists("churn_drivers.png"):
             st.image("churn_drivers.png", caption="Age & Balance are key drivers", use_container_width=True)
-        except:
+        else:
             st.info("ℹ️ Upload 'churn_drivers.png' to see the chart.")
 
         st.divider()
 
         st.subheader("2. Model Accuracy")
-        try:
-            st.image("confusion_matrix_final.png", caption="Confusion Matrix", use_container_width=True)
-        except:
-            st.info("ℹ️ Upload 'confusion_matrix_final.png' to see the matrix.")
+        # CHECK IF FILE EXISTS (Safe Method)
+        if os.path.exists("confusion_matrix_final.png"):
             st.image("confusion_matrix_final.png", caption="Confusion Matrix", use_container_width=True)
         else:
-            st.info("ℹ️ 'confusion_matrix_final.png' not found in repo.")
-        except:
-            st.info("ℹ️ Upload 'churn_drivers.png' to see the chart.")
-
-        st.divider()
-
-        st.subheader("2. Model Evaluation")
-        try:
-            st.image("confusion_matrix_final.png", caption="Confusion Matrix (Random Forest)", use_container_width=True)
-        except:
             st.info("ℹ️ Upload 'confusion_matrix_final.png' to see the matrix.")
+            
